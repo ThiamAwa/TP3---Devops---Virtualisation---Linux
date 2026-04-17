@@ -271,155 +271,7 @@ logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
 
 ### Application Angular
 
-#### `package.json`
 
-```json
-{
-  "name": "tp3-frontend",
-  "version": "1.0.0",
-  "scripts": {
-    "dev":   "vite",
-    "build": "vite build"
-  },
-  "dependencies": {
-    "react":     "^18.2.0",
-    "react-dom": "^18.2.0",
-    "axios":     "^1.6.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^5.0.0"
-  }
-}
-```
-
-#### `vite.config.js`
-
-```javascript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://192.168.56.10:8080',
-        changeOrigin: true
-      }
-    }
-  }
-})
-```
-
-#### `src/App.jsx`
-
-```jsx
-import ProduitList from './components/ProduitList'
-import './App.css'
-
-export default function App() {
-  return (
-    <div className="app">
-      <header>
-        <h1>Gestion des Produits</h1>
-        <p>server-front → server-back → server-dba</p>
-      </header>
-      <main>
-        <ProduitList />
-      </main>
-    </div>
-  )
-}
-```
-
-#### `src/components/ProduitList.jsx`
-
-```jsx
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-
-const API = '/api/produits'
-
-export default function ProduitList() {
-  const [produits, setProduits] = useState([])
-  const [form, setForm]         = useState({ nom:'', description:'', prix:'', stock:'' })
-  const [loading, setLoading]   = useState(true)
-  const [error, setError]       = useState(null)
-
-  const fetchProduits = async () => {
-    try {
-      setLoading(true)
-      const res = await axios.get(API)
-      setProduits(res.data)
-    } catch (e) {
-      setError('Impossible de contacter le backend (192.168.56.10:8080)')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { fetchProduits() }, [])
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    await axios.post(API, { ...form, prix: parseFloat(form.prix), stock: parseInt(form.stock) })
-    setForm({ nom:'', description:'', prix:'', stock:'' })
-    fetchProduits()
-  }
-
-  const handleDelete = async (id) => {
-    if (!confirm('Supprimer ce produit ?')) return
-    await axios.delete(`${API}/${id}`)
-    fetchProduits()
-  }
-
-  if (loading) return <p className="loading">Chargement...</p>
-  if (error)   return <p className="error">{error}</p>
-
-  return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th><th>Nom</th><th>Description</th>
-            <th>Prix (€)</th><th>Stock</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {produits.map(p => (
-            <tr key={p.id}>
-              <td>{p.id}</td>
-              <td>{p.nom}</td>
-              <td>{p.description}</td>
-              <td>{parseFloat(p.prix).toFixed(2)}</td>
-              <td>{p.stock}</td>
-              <td>
-                <button className="btn-delete" onClick={() => handleDelete(p.id)}>
-                  Supprimer
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <form onSubmit={handleSubmit} className="form-add">
-        <h3>Ajouter un produit</h3>
-        <input required placeholder="Nom"
-          value={form.nom} onChange={e => setForm({...form, nom: e.target.value})} />
-        <input placeholder="Description"
-          value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
-        <input required type="number" step="0.01" placeholder="Prix"
-          value={form.prix} onChange={e => setForm({...form, prix: e.target.value})} />
-        <input required type="number" placeholder="Stock"
-          value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} />
-        <button type="submit" className="btn-add">Ajouter</button>
-      </form>
-    </div>
-  )
-}
-```
 
 ### Build et déploiement
 
@@ -427,7 +279,7 @@ export default function ProduitList() {
 # Sur la machine hôte
 cd frontend
 npm install
-npm run build
+ ng build --configuration=production
 # → génère frontend/dist/
 
 # Sur server-front
@@ -479,37 +331,8 @@ mysql -u appuser -p'AppPass@2024' -h 192.168.56.20 appdb \
   -e "SELECT * FROM produits;"
 ```
 
-### Test 3 — Endpoints REST (CRUD complet)
 
-```bash
-BASE="http://localhost:8080/api/produits"
 
-# GET tous les produits
-curl -s $BASE | python3 -m json.tool
-
-# POST — créer un produit
-curl -s -X POST $BASE \
-  -H "Content-Type: application/json" \
-  -d '{"nom":"Ecran 4K","description":"27 pouces IPS","prix":549.99,"stock":20}' \
-  | python3 -m json.tool
-
-# PUT — modifier un produit
-curl -s -X PUT $BASE/1 \
-  -H "Content-Type: application/json" \
-  -d '{"nom":"Laptop Pro MAX","description":"32Go RAM","prix":1599.99,"stock":10}' \
-  | python3 -m json.tool
-
-# DELETE — supprimer
-curl -s -X DELETE $BASE/4 -w "HTTP %{http_code}\n"
-```
-
-Résultats attendus :
-
-```
-[{"id":1,"nom":"Laptop Pro",...},{"id":2,"nom":"Souris Wireless",...}]
-{"id":4,"nom":"Ecran 4K","description":"27 pouces IPS","prix":549.99,"stock":20}
-HTTP 204
-```
 
 ### Test 4 — Vérification en BDD
 
