@@ -458,10 +458,7 @@ server {
 }
 ```
 
-| Capture | Description |
-|---------|-------------|
-| ![13](./screenshots/13_react_build.png) | `npm run build` — génération du dossier `dist/` |
-| ![14](./screenshots/14_app_browser.png) | Application React dans le navigateur (localhost:80) |
+
 
 ---
 
@@ -523,7 +520,7 @@ mysql -u appuser -p'AppPass@2024' -h 192.168.56.20 appdb \
 
 | Capture | Description |
 |---------|-------------|
-| ![10](./screenshots/10_api_test_curl.png) | Tous les tests CRUD réussis |
+| ![10](33.png) | Tous les tests CRUD réussis |
 
 ---
 
@@ -587,13 +584,11 @@ Résultats attendus :
 ● nginx.service - A high performance web server    Active: active (running)
 ```
 
-| Capture | Description |
-|---------|-------------|
-| ![15](./screenshots/15_test_final.png) | Test E2E — les 3 services actifs, données cohérentes |
+
 
 ---
 
-## ✅ Résultat final
+##  Résultat final
 
 | Composant | IP | Service | Port | URL |
 |-----------|----|---------|------|-----|
@@ -607,12 +602,12 @@ Résultats attendus :
 | Framework backend | Spring Boot 3.x |
 | BDD | `appdb` — table `produits` |
 | Utilisateur BDD | `appuser` / `AppPass@2024` |
-| Framework frontend | React 18 + Vite |
+| Framework frontend | Angular + Vite |
 | Serveur web | Nginx 1.18 |
 
 ---
 
-## 🛠️ Commandes utiles
+##  Commandes utiles
 
 ```bash
 # ── Vagrant ──────────────────────────────────────────────────────
@@ -648,7 +643,7 @@ cd frontend && npm install && npm run build
 
 ---
 
-## 📄 Licence
+##  Licence
 
 Distribué sous licence MIT.
 
